@@ -28,7 +28,6 @@ public class TestController {
         return "addUser";
     }
 
-
     // Получаем значения из формы, там создаем объект и добавляем в бд
     @RequestMapping("/addInDB")
     public String addInDB(@ModelAttribute("user") User user) {
@@ -36,9 +35,24 @@ public class TestController {
         return "redirect:/";
     }
 
-    @GetMapping("/updateUser")
-    public String updateUser(@ModelAttribute("user") User user) {
+    @GetMapping("/{id}/edit")
+    public String edit(Model model, @PathVariable("id") Long id) {
+        model.addAttribute("user", userService.getUser(id));
+        return "update";
+    }
 
+    @PatchMapping("/{id}")
+    public String update(@ModelAttribute("user") User user,
+                         @PathVariable("id") Long id) {
+        userService.edit(id, user);
         return "redirect:/";
     }
+
+    @GetMapping("/{id}/delete")
+    public String delete(@PathVariable("id") Long id) {
+        userService.delete(id);
+        return "redirect:/";
+    }
+
+
 }

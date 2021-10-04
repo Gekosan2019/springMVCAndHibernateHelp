@@ -17,20 +17,26 @@ public class UserDaoImpl implements UserDao {
     @PersistenceContext
     EntityManager entityManager;
 
-    @Override
     @Transactional
+    @Override
     public void add(User user) {
         entityManager.persist(user);
     }
 
+    @Transactional
     @Override
-    public void delete(User user) {
-
+    public void delete(Long id) {
+        entityManager.remove(entityManager.find(User.class, id));
     }
 
+    @Transactional
     @Override
-    public void edit(User user) {
-
+    public void edit(Long id, User user) {
+        User user1 = entityManager.find(User.class, id);
+        user1.setAge(user.getAge());
+        user1.setName(user.getName());
+        user1.setEmail(user.getEmail());
+        user1.setSurname(user.getSurname());
     }
 
     @Transactional
@@ -39,4 +45,12 @@ public class UserDaoImpl implements UserDao {
         List<User> userList = entityManager.createNativeQuery("select * from users", User.class).getResultList();
         return userList;
     }
+
+    @Transactional
+    @Override
+    public User getUser(Long id) {
+        return listUsers().stream().filter(user -> user.getId() == id).findAny().orElse(null);
+    }
+
+
 }
