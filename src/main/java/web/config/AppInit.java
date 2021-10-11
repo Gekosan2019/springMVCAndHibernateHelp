@@ -3,7 +3,6 @@ package web.config;
 
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
@@ -12,7 +11,7 @@ public class AppInit extends AbstractAnnotationConfigDispatcherServletInitialize
     // Метод, указывающий на класс конфигурации
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class<?>[] { HibernateConfig.class};
+        return new Class<?>[] { HibernateConfig.class, SecurityConfig.class};
     }
 
 
@@ -29,6 +28,10 @@ public class AppInit extends AbstractAnnotationConfigDispatcherServletInitialize
     protected String[] getServletMappings() {
         return new String[]{"/"};
     }
+
+    // Добавили их, чтобы заработали PATCH и DELETE запросы
+    // onStartup - запускается при старте спринг приложения, здесь мы выполняем нам приватный метод
+    // Этот метод - фильтр, который смотрит на скрытое поле метода и будет перенаправлять на нужные методы контроллера
 
     @Override
     public void onStartup(ServletContext aServletContext) throws ServletException {

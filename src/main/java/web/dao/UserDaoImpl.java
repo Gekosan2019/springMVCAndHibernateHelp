@@ -12,8 +12,6 @@ import java.util.List;
 @Repository
 public class UserDaoImpl implements UserDao {
 
-    private static long id;
-
     @PersistenceContext
     EntityManager entityManager;
 
@@ -25,16 +23,16 @@ public class UserDaoImpl implements UserDao {
 
     @Transactional
     @Override
-    public void delete(Long id) {
-        entityManager.remove(entityManager.find(User.class, id));
+    public void delete(String  username) {
+        entityManager.remove(entityManager.find(User.class, username));
     }
 
     @Transactional
     @Override
-    public void edit(Long id, User user) {
-        User user1 = entityManager.find(User.class, id);
+    public void edit(String username, User user) {
+        User user1 = entityManager.find(User.class, username);
         user1.setAge(user.getAge());
-        user1.setName(user.getName());
+        user1.setName(user.getUsername());
         user1.setEmail(user.getEmail());
         user1.setSurname(user.getSurname());
     }
@@ -48,9 +46,10 @@ public class UserDaoImpl implements UserDao {
 
     @Transactional
     @Override
-    public User getUser(Long id) {
-        return listUsers().stream().filter(user -> user.getId() == id).findAny().orElse(null);
+    public User getUser(String username) {
+        return listUsers().stream().filter(user -> user.getUsername().equals(username)).findAny().orElse(null);
     }
+
 
 
 }

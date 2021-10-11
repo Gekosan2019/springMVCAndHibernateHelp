@@ -3,10 +3,12 @@ package web.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import web.model.User;
 import web.service.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -35,24 +37,38 @@ public class TestController {
         return "redirect:/";
     }
 
-    @GetMapping("/{id}/edit")
-    public String edit(Model model, @PathVariable("id") Long id) {
-        model.addAttribute("user", userService.getUser(id));
+    @GetMapping("/{username}/edit")
+    public String edit(Model model, @PathVariable("username") String username) {
+        model.addAttribute("user", userService.getUser(username));
         return "update";
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{username}")
     public String update(@ModelAttribute("user") User user,
-                         @PathVariable("id") Long id) {
-        userService.edit(id, user);
+                         @PathVariable("username") String username) {
+        userService.edit(username, user);
         return "redirect:/";
     }
 
-    @GetMapping("/{id}/delete")
-    public String delete(@PathVariable("id") Long id) {
-        userService.delete(id);
+    @GetMapping("/{username}/delete")
+    public String delete(@PathVariable("username") String username) {
+        userService.delete(username);
         return "redirect:/";
     }
 
+    @RequestMapping(value = "hello", method = RequestMethod.GET)
+    public String printWelcome(ModelMap model) {
+        List<String> messages = new ArrayList<>();
+        messages.add("Hello!");
+        messages.add("I'm Spring MVC-SECURITY application");
+        messages.add("5.2.0 version by sep'19 ");
+        model.addAttribute("messages", messages);
+        return "hello";
+    }
+
+    @RequestMapping(value = "login", method = RequestMethod.GET)
+    public String loginPage() {
+        return "login";
+    }
 
 }

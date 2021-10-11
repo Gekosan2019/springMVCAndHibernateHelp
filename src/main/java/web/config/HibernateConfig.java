@@ -20,8 +20,12 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
+//Эта аннотация включает поддержку Spring Data JPA и автогенерацию кода для доступа к данным. Наличие этой аннотации подразумевает,
+// что в Spring context будет два бина, один с именем entityManagerFactory, другой с именем transactionManager.
 @EnableJpaRepositories(basePackages = "web")
 @PropertySource("classpath:db.properties")
+// указывает Спринг, что классы с аннотацией @Transactional,
+// должны быть обернуты аспектом транзакций. Теперь можно использовать аннотацию @Transactional.
 @EnableTransactionManagement
 @ComponentScan(value = "web")
 public class HibernateConfig {
