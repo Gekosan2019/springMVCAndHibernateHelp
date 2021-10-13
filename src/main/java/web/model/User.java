@@ -69,7 +69,7 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
-    public void setName(String username) {
+    public void setUsername(String username) {
         this.username = username;
     }
 

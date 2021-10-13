@@ -31,16 +31,17 @@ public class UserDaoImpl implements UserDao {
     @Override
     public void edit(String username, User user) {
         User user1 = entityManager.find(User.class, username);
+        user1.setUsername(user.getUsername());
         user1.setAge(user.getAge());
-        user1.setName(user.getUsername());
         user1.setEmail(user.getEmail());
+        user1.setRoles(user.getRoles());
         user1.setSurname(user.getSurname());
     }
 
     @Transactional
     @Override
     public List<User> listUsers() {
-        List<User> userList = entityManager.createNativeQuery("select * from users", User.class).getResultList();
+        List<User> userList = entityManager.createNativeQuery("SELECT * FROM users", User.class).getResultList();
         return userList;
     }
 

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import web.model.User;
 import web.service.UserService;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,53 +18,50 @@ public class TestController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/")
+    @GetMapping("/admin")
     public String allUsers(Model model)  {
         List<User> userList = userService.listUsers();
         model.addAttribute("userList", userList);
         return "tableUsers";
     }
 
-    @RequestMapping("/addNewUser")
+    @RequestMapping("/admin/addNewUser")
     public String addNewUser(Model model) {
         model.addAttribute("user", new User());
         return "addUser";
     }
 
     // Получаем значения из формы, там создаем объект и добавляем в бд
-    @RequestMapping("/addInDB")
+    @RequestMapping(value = "/admin/addInDB")
     public String addInDB(@ModelAttribute("user") User user) {
         userService.add(user);
-        return "redirect:/";
+        return "redirect:/admin";
     }
 
-    @GetMapping("/{username}/edit")
+    @GetMapping("/admin/{username}/edit")
     public String edit(Model model, @PathVariable("username") String username) {
         model.addAttribute("user", userService.getUser(username));
         return "update";
     }
 
-    @PatchMapping("/{username}")
+    @PatchMapping("/admin/{username}")
     public String update(@ModelAttribute("user") User user,
                          @PathVariable("username") String username) {
         userService.edit(username, user);
-        return "redirect:/";
+        return "redirect:/admin";
     }
 
-    @GetMapping("/{username}/delete")
+    @GetMapping("/admin/{username}/delete")
     public String delete(@PathVariable("username") String username) {
         userService.delete(username);
-        return "redirect:/";
+        return "redirect:/admin";
     }
 
-    @RequestMapping(value = "hello", method = RequestMethod.GET)
-    public String printWelcome(ModelMap model) {
-        List<String> messages = new ArrayList<>();
-        messages.add("Hello!");
-        messages.add("I'm Spring MVC-SECURITY application");
-        messages.add("5.2.0 version by sep'19 ");
-        model.addAttribute("messages", messages);
-        return "hello";
+    @RequestMapping(value = "user", method = RequestMethod.GET)
+    public String userInfo(Principal principal, Model model) {
+        User user = userService.getUser(principal.getName());
+        model.addAttribute("user", user);
+        return "userInfo";
     }
 
     @RequestMapping(value = "login", method = RequestMethod.GET)
