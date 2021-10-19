@@ -4,13 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import web.model.Role;
 import web.model.User;
 import web.service.UserService;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 public class TestController {
@@ -25,15 +29,19 @@ public class TestController {
         return "tableUsers";
     }
 
-    @RequestMapping("/admin/addNewUser")
+    @GetMapping("/admin/addNewUser")
     public String addNewUser(Model model) {
         model.addAttribute("user", new User());
         return "addUser";
     }
 
     // Получаем значения из формы, там создаем объект и добавляем в бд
-    @RequestMapping(value = "/admin/addInDB")
-    public String addInDB(@ModelAttribute("user") User user) {
+    @RequestMapping(method = RequestMethod.POST)
+    public String addInDB(@ModelAttribute("user") User user, @ModelAttribute("role") String my_role) {
+        Role role = new Role("ROLE" + my_role);
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+        user.setRoles(roles);
         userService.add(user);
         return "redirect:/admin";
     }
