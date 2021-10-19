@@ -36,7 +36,7 @@ public class TestController {
     }
 
     // Получаем значения из формы, там создаем объект и добавляем в бд
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping()
     public String addInDB(@ModelAttribute("user") User user, @ModelAttribute("role") String my_role) {
         Role role = new Role("ROLE" + my_role);
         Set<Role> roles = new HashSet<>();
