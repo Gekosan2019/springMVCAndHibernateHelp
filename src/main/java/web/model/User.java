@@ -16,6 +16,9 @@ import java.util.Set;
 public class User implements UserDetails {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name = "username")
     private String username; // уникальное значение
 
@@ -31,9 +34,10 @@ public class User implements UserDetails {
     @Column(name = "age")
     private Long age;
 
-    @OneToMany(cascade =  CascadeType.ALL, mappedBy = "user")
-    private Set<Role> roles = new HashSet<>();
-
+    @ManyToMany
+    @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name ="users_id"),
+    inverseJoinColumns = @JoinColumn(name = "roles_id"))
+    private Set<Role> roles;
 
     public void setSurname(String surname) {
         this.surname = surname;
@@ -63,8 +67,13 @@ public class User implements UserDetails {
 
     }
 
-    public User(String username, String password, Set<Role> roles) {
+    public User(Long id, String username, String surname,
+                String email,
+                String password, Set<Role> roles) {
+        this.id = id;
         this.username = username;
+        this.surname = surname;
+        this.email = email;
         this.password = password;
         this.roles = roles;
     }
@@ -82,6 +91,14 @@ public class User implements UserDetails {
     @Override
     public String getPassword() {
         return password;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override

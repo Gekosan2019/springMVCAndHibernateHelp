@@ -22,35 +22,46 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Autowired
     private UserDao userDao;
 
+    @Transactional
     @Override
     public void add(User user) {
         userDao.add(user);
     }
 
+    @Transactional
     @Override
-    public void delete(String username) {
-        userDao.delete(username);
+    public void delete(Long id) {
+        userDao.delete(id);
     }
 
+    @Transactional
     @Override
-    public void edit(String username,User user) {
-        userDao.edit(username, user);
+    public void edit(Long id,User user) {
+        userDao.edit(id, user);
     }
 
+    @Transactional
     @Override
     public List<User> listUsers() {
         return userDao.listUsers();
     }
 
+    @Transactional
     @Override
-    public User getUser(String username) {
-        return userDao.getUser(username);
+    public User getUserByID(Long id) {
+        return userDao.getUserByID(id);
     }
 
-    @Override
     @Transactional
+    @Override
+    public User getUserByUsername(String username) {
+        return userDao.getUserByUsername(username);
+    }
+
+    @Transactional
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userDao.getUser(username);
+        User user = userDao.getUserByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException(String.format("User '%s' not found", username));
         }

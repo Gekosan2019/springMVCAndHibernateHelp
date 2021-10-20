@@ -38,7 +38,7 @@ public class TestController {
     // Получаем значения из формы, там создаем объект и добавляем в бд
     @PostMapping("/admin")
     public String addInDB(@ModelAttribute("user") User user, @ModelAttribute("role") String my_role) {
-        Role role = new Role("ROLE_" + my_role, user);
+        Role role = new Role((my_role.equals("ADMIN") ? 1L : 2L), "ROLE_" + my_role);
         Set<Role> roles = new HashSet<>();
         roles.add(role);
         user.setRoles(roles);
@@ -46,28 +46,28 @@ public class TestController {
         return "redirect:/admin";
     }
 
-    @GetMapping("/admin/{username}/edit")
-    public String edit(Model model, @PathVariable("username") String username) {
-        model.addAttribute("user", userService.getUser(username));
+    @GetMapping("/admin/{id}/edit")
+    public String edit(Model model, @PathVariable("id") Long id) {
+        model.addAttribute("user", userService.getUserByID(id));
         return "update";
     }
 
-    @PatchMapping("/admin/{username}")
+    @PatchMapping("/admin/{id}")
     public String update(@ModelAttribute("user") User user,
-                         @PathVariable("username") String username) {
-        userService.edit(username, user);
+                         @PathVariable("id") Long id) {
+        userService.edit(id, user);
         return "redirect:/admin";
     }
 
-    @GetMapping("/admin/{username}/delete")
-    public String delete(@PathVariable("username") String username) {
-        userService.delete(username);
+    @GetMapping("/admin/{id}/delete")
+    public String delete(@PathVariable("id") Long id) {
+        userService.delete(id);
         return "redirect:/admin";
     }
 
     @RequestMapping(value = "user", method = RequestMethod.GET)
     public String userInfo(Principal principal, Model model) {
-        User user = userService.getUser(principal.getName());
+        User user = userService.getUserByUsername(principal.getName());
         model.addAttribute("user", user);
         return "userInfo";
     }

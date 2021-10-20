@@ -15,22 +15,19 @@ public class UserDaoImpl implements UserDao {
     @PersistenceContext
     EntityManager entityManager;
 
-    @Transactional
     @Override
     public void add(User user) {
         entityManager.persist(user);
     }
 
-    @Transactional
     @Override
-    public void delete(String  username) {
-        entityManager.remove(entityManager.find(User.class, username));
+    public void delete(Long id) {
+        entityManager.remove(entityManager.find(User.class, id));
     }
 
-    @Transactional
     @Override
-    public void edit(String username, User user) {
-        User user1 = entityManager.find(User.class, username);
+    public void edit(Long id, User user) {
+        User user1 = entityManager.find(User.class, id);
         user1.setUsername(user.getUsername());
         user1.setAge(user.getAge());
         user1.setEmail(user.getEmail());
@@ -38,19 +35,19 @@ public class UserDaoImpl implements UserDao {
         user1.setSurname(user.getSurname());
     }
 
-    @Transactional
     @Override
     public List<User> listUsers() {
         List<User> userList = entityManager.createNativeQuery("SELECT * FROM users", User.class).getResultList();
         return userList;
     }
 
-    @Transactional
     @Override
-    public User getUser(String username) {
-        return listUsers().stream().filter(user -> user.getUsername().equals(username)).findAny().orElse(null);
+    public User getUserByID(Long id) {
+        return listUsers().stream().filter(user -> user.getId().equals(id)).findAny().orElse(null);
     }
 
-
-
+    @Override
+    public User getUserByUsername(String username) {
+        return listUsers().stream().filter(user -> user.getUsername().equals(username)).findAny().orElse(null);
+    }
 }

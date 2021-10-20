@@ -3,40 +3,61 @@ package web.model;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
+import java.util.Set;
 
 // Этот класс реализует интерфейс GrantedAuthority, в котором необходимо переопределить только один метод getAuthority() (возвращает имя роли).
 // Имя роли должно соответствовать шаблону: «ROLE_ИМЯ», например, ROLE_USER.
 
 @Entity
-@Table(name = "authorities")
+@Table(name = "roles")
 public class Role implements GrantedAuthority {
 
     @Id
-    @Column(name = "authority")
-    private String authority;
+    private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "username")
-    private User user;
+    private String username;
+
+    @ManyToMany(mappedBy = "roles")
+    private Set<User> users;
+
+    public Role(Long admin, String s, User user) {
+    }
+
+    public Role(Long id) {
+        this.id = id;
+    }
+
+    public Role(Long id, String username) {
+        this.id = id;
+        this.username = username;
+    }
 
     public Role() {
+
     }
 
-    public Role(String authority, User user) {
-        this.authority = authority;
-        this.user = user;
+    public Long getId() {
+        return id;
     }
 
-    public Role(String authority) {
-        this.authority = authority;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public void setAuthority(String authority) {
-        this.authority = authority;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 
     @Override
     public String getAuthority() {
-        return authority;
+        return username;
     }
 }
