@@ -1,6 +1,10 @@
 package web.dao;
 
 
+import org.hibernate.Session;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import web.model.User;
@@ -15,8 +19,12 @@ public class UserDaoImpl implements UserDao {
     @PersistenceContext
     EntityManager entityManager;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public void add(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         entityManager.persist(user);
     }
 
@@ -26,13 +34,13 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void edit(Long id, User user) {
-        User user1 = entityManager.find(User.class, id);
-        user1.setUsername(user.getUsername());
-        user1.setAge(user.getAge());
-        user1.setEmail(user.getEmail());
-        user1.setRoles(user.getRoles());
-        user1.setSurname(user.getSurname());
+    public void edit(User user) {
+        User user1 = entityManager.find(User.class, user.getId());
+        user.setRoles(user1.getRoles());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        entityManager.detach(user1);
+        Session session = entityManager.unwrap(Session.class);
+        session.update(user);
     }
 
     @Override
@@ -43,11 +51,15 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User getUserByID(Long id) {
-        return listUsers().stream().filter(user -> user.getId().equals(id)).findAny().orElse(null);
+        User user = entityManager.createQuery("SELECT r FROM User r WHERE r.id = :id", User.class)
+                .setParameter("id", id).getSingleResult();
+        return user;
     }
 
     @Override
     public User getUserByUsername(String username) {
-        return listUsers().stream().filter(user -> user.getUsername().equals(username)).findAny().orElse(null);
+        User user = entityManager.createQuery("SELECT r FROM User r WHERE r.username = :username", User.class)
+                .setParameter("username", username).getSingleResult();
+        return user;
     }
 }

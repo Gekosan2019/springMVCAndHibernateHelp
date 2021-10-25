@@ -17,10 +17,14 @@ import java.util.List;
 import java.util.Set;
 
 @Controller
-public class TestController {
+public class AdminController {
+
+    private UserService userService;
 
     @Autowired
-    private UserService userService;
+    private void setUserService(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/admin")
     public String allUsers(Model model)  {
@@ -53,9 +57,8 @@ public class TestController {
     }
 
     @PatchMapping("/admin/{id}")
-    public String update(@ModelAttribute("user") User user,
-                         @PathVariable("id") Long id) {
-        userService.edit(id, user);
+    public String update(@ModelAttribute("user") User user) {
+        userService.edit(user);
         return "redirect:/admin";
     }
 
@@ -63,13 +66,6 @@ public class TestController {
     public String delete(@PathVariable("id") Long id) {
         userService.delete(id);
         return "redirect:/admin";
-    }
-
-    @RequestMapping(value = "user", method = RequestMethod.GET)
-    public String userInfo(Principal principal, Model model) {
-        User user = userService.getUserByUsername(principal.getName());
-        model.addAttribute("user", user);
-        return "userInfo";
     }
 
     @RequestMapping(value = "login", method = RequestMethod.GET)

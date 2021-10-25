@@ -13,12 +13,10 @@ import web.model.Role;
 import web.model.User;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
-public class UserServiceImpl implements UserService {
+public class UserDetailServiceImpl implements UserDetailsService {
 
     private UserDao userDao;
 
@@ -27,34 +25,17 @@ public class UserServiceImpl implements UserService {
         this.userDao = userDao;
     }
 
+    @Transactional
     @Override
-    public void add(User user) {
-        userDao.add(user);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userDao.getUserByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(String.format("User '%s' not found", username));
+        }
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), mapRolesToAuthorities((Collection<Role>) user.getAuthorities()));
     }
 
-    @Override
-    public void delete(Long id) {
-        userDao.delete(id);
+    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
+        return roles.stream().map(r -> new SimpleGrantedAuthority(r.getAuthority())).collect(Collectors.toList());
     }
-
-    @Override
-    public void edit(User user) {
-        userDao.edit(user);
-    }
-
-    @Override
-    public List<User> listUsers() {
-        return userDao.listUsers();
-    }
-
-    @Override
-    public User getUserByID(Long id) {
-        return userDao.getUserByID(id);
-    }
-
-    @Override
-    public User getUserByUsername(String username) {
-        return userDao.getUserByUsername(username);
-    }
-
 }
